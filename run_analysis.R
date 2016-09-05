@@ -67,8 +67,8 @@ print(summary(DataTidy))
 
 
 # Saving the tidy data to text and csv file
-write.table(DataTidy,file = "./TidyData.txt",col.names = TRUE)
-write.csv(DataTidy,file = "./TidyData.csv")
+write.table(DataTidy,file = "./TidyData.txt",row.names = FALSE)
+write.csv(DataTidy,file = "./TidyData.csv", row.names = FALSE)
 saveRDS(DataTidy,"./TidyData.rds")
 
 # Cleaning up by removing all environment variables
