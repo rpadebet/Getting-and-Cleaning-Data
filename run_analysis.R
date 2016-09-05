@@ -1,6 +1,7 @@
 # Load libraries
 library(dplyr)
 library(tidyr)
+library(readr)
 
 # Download the necessary files and unzip it to working directory
 file_url <- "https://d396qusza40orc.cloudfront.net/getdata%2Fprojectfiles%2FUCI%20HAR%20Dataset.zip"
@@ -64,9 +65,11 @@ DataTidy<-DataSetMergedNamed%>%
 # Summarizing the data
 print(summary(DataTidy))
 
+
 # Saving the tidy data to text and csv file
 write.table(DataTidy,file = "./TidyData.txt",col.names = TRUE)
 write.csv(DataTidy,file = "./TidyData.csv")
+saveRDS(DataTidy,"./TidyData.rds")
 
 # Cleaning up by removing all environment variables
 # rm(list = ls())

@@ -2,21 +2,99 @@
 title: "Code Book"
 author: "Rohit Padebettu"
 date: "September 5, 2016"
-output: html_document
+output: pdf_document
 ---
 
-This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
+## Steps in Analysis
+1. Load the `dplyr`,`readr` and `tidyr` libraries
+2. Read the X.txt, y.txt and subject.txt files in the "test" and "train" directories into respective tibbles
+3. Read the features.txt file and activity_labels.txt file in the downloaded file directory into tibbles
+4. Merge the train and test datasets for each of X,y and subject files using `bind_rows()` and `bind_cols()` from readr package
+5. Grep the features.txt file to get an index for columns with `mean()` and `std()` occurring in them
+6. Use the index to subset the columns of the tibble `X` and tibble `feature`
+7. Append a column to the tibble `y` by using `inner_join` with the `activity_lables` tibble. This associates descriptive names with each Activity in `y`
+8. Give appropriate descriptive names to the columns in `y`,`subject` and use the subsetted `features_filtered` tibble to name the columns in subsetted `X_filt`
+9. Combine the `subject`, `y`, `X_filt` tibbles to create a new dataset `DataSetMergedNamed` which now has descriptive variable names and only mean and standard deviation attributes
+10. Tidy the dataset by
+    + Removing the `ActivityId` attribute
+    + melting the data using `gather()` from `dplyr` package to create a dataset with only 4 columns `Subject`,`Activity`,`Feature`,`Value`
+    + Group the data set into sub-groups based on Subject, Activity and Feature using `group_by` function
+    + Calculate the `mean()` of each such sub_group using the `summarize` function in `dplyr` package
+    + Name the column `Average`
+11. The resulting dataset `DataTidy` is tidy as each column is a variable, each row is an observation and each observational unit is a value in the table. 
+12. A summary of `DataTidy` is displayed and result is saved as `TidyData.txt` and `TidyData.csv`
 
-When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
+## Brief Description of TidyData.txt
 
-```{r}
-summary(cars)
+The TidyData set has 4 columns given below
+```{r kable,echo=FALSE}
+DataTidy<-readRDS("./TidyData.RDS")
+names(DataTidy)
+
+head(DataTidy,5)
+
+summary(DataTidy)
+
 ```
 
-You can also embed plots, for example:
 
-```{r, echo=FALSE}
-plot(cars)
+**Subject** :   Is the ID of the person subject to the test. There were 30 volunteers in the original test
+
+**Activity**:   Is the Activity the subject performed while measured. It is encoded as a factor of 6 levels, listed above
+
+**Feature** :   Is the feature extracted from the original data set. There are 66 such features selected from the original dataset of 561 features.
+
+**Average** :   Is the average value of a particular feature for the subject when performing a specific activity
+
+
+## Feature Selection 
+*(reproduced from original feature_info.txt document)*
+
+*The features selected for this database come from the accelerometer and gyroscope 3-axial raw signals tAcc-XYZ and tGyro-XYZ. These time domain signals (prefix 't' to denote time) were captured at a constant rate of 50 Hz. Then they were filtered using a median filter and a 3rd order low pass Butterworth filter with a corner frequency of 20 Hz to remove noise. Similarly, the acceleration signal was then separated into body and gravity acceleration signals (tBodyAcc-XYZ and tGravityAcc-XYZ) using another low pass Butterworth filter with a corner frequency of 0.3 Hz.*
+
+*Subsequently, the body linear acceleration and angular velocity were derived in time to obtain Jerk signals (tBodyAccJerk-XYZ and tBodyGyroJerk-XYZ). Also the magnitude of these three-dimensional signals were calculated using the Euclidean norm (tBodyAccMag, tGravityAccMag, tBodyAccJerkMag, tBodyGyroMag, tBodyGyroJerkMag).*
+
+*Finally a Fast Fourier Transform (FFT) was applied to some of these signals producing fBodyAcc-XYZ, fBodyAccJerk-XYZ, fBodyGyro-XYZ, fBodyAccJerkMag, fBodyGyroMag, fBodyGyroJerkMag. (Note the 'f' to indicate frequency domain signals).*
+
+These signals were used to estimate variables of the feature vector for each pattern: 
+
+```
+tBodyAcc-XYZ
+tGravityAcc-XYZ
+tBodyAccJerk-XYZ
+tBodyGyro-XYZ
+tBodyGyroJerk-XYZ
+tBodyAccMag
+tGravityAccMag
+tBodyAccJerkMag
+tBodyGyroMag
+tBodyGyroJerkMag
+fBodyAcc-XYZ
+fBodyAccJerk-XYZ
+fBodyGyro-XYZ
+fBodyAccMag
+fBodyAccJerkMag
+fBodyGyroMag
+fBodyGyroJerkMag
 ```
 
-Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
+The set of variables that were estimated from these signals are: 
+
+```
+mean(): Mean value
+std(): Standard deviation
+```
+
+## Feature List
+
+The entire list of 66 features contained in this data set are as follows
+
+```{r,echo=FALSE}
+features <- read.table(file = "./UCI HAR Dataset/features.txt", header = FALSE)
+meanIdx <- grep(pattern = "mean()",as.character(features$V2),value = FALSE,fixed = TRUE)
+stdIdx <- grep(pattern = "std()",as.character(features$V2),value = FALSE,fixed = TRUE)
+Idx <- sort(c(meanIdx,stdIdx),decreasing = FALSE)
+features_filtered <- features[Idx,]
+print(as.matrix(features_filtered$V2))
+```
+

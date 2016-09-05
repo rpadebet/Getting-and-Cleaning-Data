@@ -130,6 +130,46 @@ $(document).ready(function () {
 <li>Appropriately labels the data set with descriptive variable names.</li>
 <li>From the data set in step 4, creates a second, independent tidy data set with the average of each variable for each activity and each subject.</li>
 </ul>
+<div id="data-cleaning-and-analysis" class="section level1">
+<h1>Data Cleaning and Analysis</h1>
+<div id="running-the-analysis-script" class="section level2">
+<h2>Running the analysis script</h2>
+<p>Download the <code>run_analysis.R</code> file to your working directory. Download the zip file manually to your working directory (or you can uncomment the <code>download.file()</code> code in <code>run_analysis.R</code>). Then type the following command in the R console</p>
+<pre><code>source('~/run_analysis.R')</code></pre>
+</div>
+<div id="steps-in-analysis" class="section level2">
+<h2>Steps in Analysis</h2>
+<ol style="list-style-type: decimal">
+<li>Load the <code>dplyr</code>,<code>readr</code> and <code>tidyr</code> libraries</li>
+<li>Read the X.txt, y.txt and subject.txt files in the “test” and “train” directories into respective tibbles</li>
+<li>Read the features.txt file and activity_labels.txt file in the downloaded file directory into tibbles</li>
+<li>Merge the train and test datasets for each of X,y and subject files using <code>bind_rows()</code> and <code>bind_cols()</code> from readr package</li>
+<li>Grep the features.txt file to get an index for columns with <code>mean()</code> and <code>std()</code> occurring in them</li>
+<li>Use the index to subset the columns of the tibble <code>X</code> and tibble <code>feature</code></li>
+<li>Append a column to the tibble <code>y</code> by using <code>inner_join</code> with the <code>activity_lables</code> tibble. This associates descriptive names with each Activity in <code>y</code></li>
+<li>Give appropriate descriptive names to the columns in <code>y</code>,<code>subject</code> and use the subsetted <code>features_filtered</code> tibble to name the columns in subsetted <code>X_filt</code></li>
+<li>Combine the <code>subject</code>, <code>y</code>, <code>X_filt</code> tibbles to create a new dataset <code>DataSetMergedNamed</code> which now has descriptive variable names and only mean and standard deviation attributes</li>
+<li>Tidy the dataset by
+<ul>
+<li>Removing the <code>ActivityId</code> attribute</li>
+<li>melting the data using <code>gather()</code> from <code>dplyr</code> package to create a dataset with only 4 columns <code>Subject</code>,<code>Activity</code>,<code>Feature</code>,<code>Value</code></li>
+<li>Group the data set into sub-groups based on Subject, Activity and Feature using <code>group_by</code> function</li>
+<li>Calculate the <code>mean()</code> of each such sub_group using the <code>summarize</code> function in <code>dplyr</code> package</li>
+<li>Name the column <code>Average</code></li>
+</ul></li>
+<li>The resulting dataset <code>DataTidy</code> is tidy as each column is a variable, each row is an observation and each observational unit is a value in the table.</li>
+<li>A summary of <code>DataTidy</code> is displayed</li>
+</ol>
+</div>
+<div id="saving-the-result" class="section level2">
+<h2>Saving the result</h2>
+<p>The resulting dataset <code>DataTidy</code> is saved in the working directory as <code>TidyData.txt</code> and <code>TidyData.csv</code>. Both these files are available in the repository.</p>
+</div>
+<div id="code-book" class="section level2">
+<h2>Code Book</h2>
+<p>The code book associated with this analysis <code>CodeBook.rmd</code> and <code>CodeBook.pdf</code> contains the steps necessary to arrive at the tidy data from the original data. It also contains a description of the column names and features.</p>
+</div>
+</div>
 
 
 

@@ -1,22 +1,48 @@
 ---
-**title: "Description of Analysis"**
+title: "Description of Analysis"
 author: "Rohit Padebettu"
 date: "September 5, 2016"
 output: html_document
 ---
 
-This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
+# Data Cleaning and Analysis
 
-When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
+## Running the analysis script
 
-```{r}
-summary(cars)
+Download the `run_analysis.R` file to your working directory.
+Download the zip file manually to your working directory (or you can uncomment the `download.file()` code in `run_analysis.R`).
+Then type the following command in the R console
+
 ```
-
-You can also embed plots, for example:
-
-```{r, echo=FALSE}
-plot(cars)
+source('~/run_analysis.R')
 ```
+## Steps in Analysis
 
-Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
+1. Load the `dplyr`,`readr` and `tidyr` libraries
+2. Read the X.txt, y.txt and subject.txt files in the "test" and "train" directories into respective tibbles
+3. Read the features.txt file and activity_labels.txt file in the downloaded file directory into tibbles
+4. Merge the train and test datasets for each of X,y and subject files using `bind_rows()` and `bind_cols()` from readr package
+5. Grep the features.txt file to get an index for columns with `mean()` and `std()` occurring in them
+6. Use the index to subset the columns of the tibble `X` and tibble `feature`
+7. Append a column to the tibble `y` by using `inner_join` with the `activity_lables` tibble. This associates descriptive names with each Activity in `y`
+8. Give appropriate descriptive names to the columns in `y`,`subject` and use the subsetted `features_filtered` tibble to name the columns in subsetted `X_filt`
+9. Combine the `subject`, `y`, `X_filt` tibbles to create a new dataset `DataSetMergedNamed` which now has descriptive variable names and only mean and standard deviation attributes
+10. Tidy the dataset by
+    + Removing the `ActivityId` attribute
+    + melting the data using `gather()` from `dplyr` package to create a dataset with only 4 columns `Subject`,`Activity`,`Feature`,`Value`
+    + Group the data set into sub-groups based on Subject, Activity and Feature using `group_by` function
+    + Calculate the `mean()` of each such sub_group using the `summarize` function in `dplyr` package
+    + Name the column `Average`
+11. The resulting dataset `DataTidy` is tidy as each column is a variable, each row is an observation and each observational unit is a value in the table. 
+12. A summary of `DataTidy` is displayed
+
+## Saving the result
+
+The resulting dataset `DataTidy` is saved in the working directory as `TidyData.txt` and `TidyData.csv` as well as `TidyData.RDS`.
+
+These 3 files are available in the repository.
+
+## Code Book
+
+The code book associated with this analysis `CodeBook.rmd` and `CodeBook.pdf` contains the steps necessary to arrive at the tidy data from the original data. It also contains a description of the column names and feature lists.
+
