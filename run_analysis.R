@@ -2,10 +2,9 @@
 library(dplyr)
 library(tidyr)
 
-# Download the necessary files
+# Download the necessary files and unzip it to working directory
 file_url <- "https://d396qusza40orc.cloudfront.net/getdata%2Fprojectfiles%2FUCI%20HAR%20Dataset.zip"
 dfile_name <-"Dataset.zip"
-
 # download.file(file_url,dfile_name)   #Used to download the file to local directory
 unzip(dfile_name)
 
